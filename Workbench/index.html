@@ -1,0 +1,385 @@
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!--
+  Modified from original Node-Red source, for audio system visualization
+
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<title>Audio System Design Tool for Teensy Audio Library</title>
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="jquery/css/smoothness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" media="screen">
+<link rel="stylesheet" type="text/css" href="orion/built-editor.css">
+<link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+table.doc {border-spacing:3px; border-collapse:separate; font-size: 80%}
+tr.top {background-color:#C0C0C0}
+tr.odd {background-color:#F0F0F0}
+tr.even {background-color:#E0E0E0}
+p.func {padding-bottom:0; margin:0px}
+p.desc {padding-left:2em; margin:0px; padding-top:0.2em; padding-bottom:0.8em; font-size:0.75em}
+p.exam {padding-left:2em; text-indent:-1.2em; margin:0px; padding-top:0; padding-bottom:0.5em; font-size:0.75em; font-weight:bold}
+pre.desc {padding-left:3em; margin:0px; padding-top:0em; padding-bottom:0.8em; font-size:0.75em;
+	background-color:#FFFFFF; border:0px; line-height:100%;
+}
+span.indent {padding-left:2em}
+span.literal {color: #006699}
+span.comment {color: #777755}
+span.keyword {color: #cc6600}
+span.function {color: #996600}
+span.mainfunction {color: #993300; font-weight: bolder}
+</style>
+</head>
+<body spellcheck="false">
+<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="navbar-inner">
+	</div>
+</div>
+<div id="main-container" class="">
+	<div id="palette">
+		<img src="img/spin.svg" class="palette-spinner" style="display: none;">
+		<div id="palette-container" class="palette-scroll" style="display: block;">
+		</div>
+	</div><!-- /palette -->
+
+	<div id="workspace">
+		<ul id="workspace-tabs" class="red-ui-tabs"></ul>
+		<!--<div id="workspace-add-tab"><a id="btn-workspace-add-tab" href="#"><i class="icon-plus"></i></a></div>-->
+		<div id="chart" class="ui-droppable"></div>
+		<div id="workspace-toolbar">
+			<div class="btn-group">
+				<a class="btn btn-small" href="#"><i class="icon-zoom-out"></i></a>
+				<a class="btn btn-small" href="#"><i class="icon-th"></i></a>
+				<a class="btn btn-small" href="#"><i class="icon-zoom-in"></i></a>
+			</div>
+		</div>
+	</div>
+
+	<div id="sidebar">
+		<ul id="sidebar-tabs" class="red-ui-tabs"><li class="red-ui-tab active" style="width: 95.6081%;"><a href="#tab-info" class="red-ui-tab-label" title="info">info</a></li></ul>
+		<div id="sidebar-content"><div id="tab-info" style="padding-top: 4px; padding-left: 4px; padding-right: 4px; display: block;"><h3>AudioInputI2S</h3><div class="node-help">
+	<h3>Summary</h3>
+	<div class="tooltipinfo">
+	<p>Receive 16 bit stereo audio from the
+	<a href="http://www.pjrc.com/store/teensy3_audio.html" target="_blank">audio shield</a>
+		or another I2S device, using I2S master mode.</p>
+	<p align="center"><img src="img/audioshield_inputs.jpg"></p>
+	</div>
+	<h3>Audio Connections</h3>
+	<table class="doc" align="center" cellpadding="3">
+		<tbody><tr class="top"><th>Port</th><th>Purpose</th></tr>
+		<tr class="odd"><td align="center">Out 0</td><td>Left Channel</td></tr>
+		<tr class="odd"><td align="center">Out 1</td><td>Right Channel</td></tr>
+	</tbody></table>
+	<h3>Functions</h3>
+	<p>This object has no functions to call from the Arduino sketch.  It
+		simply streams data from the I2S hardware to its 2 output ports.</p>
+	<h3>Hardware</h3>
+	<p align="center"><img src="img/audioshield_backside.jpg"></p>
+	<p>The I2S signals are used in "master" mode, where Teensy creates
+		all 3 clock signals and controls all data timing.</p>
+	<table class="doc" align="center" cellpadding="3">
+		<tbody><tr class="top"><th>Pin</th><th>Signal</th><th>Direction</th></tr>
+		<tr class="odd"><td align="center">9</td><td>BCLK</td><td>Output</td></tr>
+		<tr class="odd"><td align="center">11</td><td>MCLK</td><td>Output</td></tr>
+		<tr class="odd"><td align="center">13</td><td>RX</td><td>Input</td></tr>
+		<tr class="odd"><td align="center">23</td><td>LRCLK</td><td>Output</td></tr>
+	</tbody></table>
+	<p>Audio from
+		master mode I2S may be used in the same project as ADC, DAC and
+		PWM signals, because all remain in sync to Teensy's timing</p>
+	<h3>Examples</h3>
+	<p class="exam">File &gt; Examples &gt; Audio &gt; HardwareTesting &gt; PassThroughStereo
+	</p>
+	<p class="exam">File &gt; Examples &gt; Audio &gt; Recorder
+	</p>
+	<p class="exam">File &gt; Examples &gt; Audio &gt; Analysis &gt; PeakMeterStereo
+	</p>
+	<p class="exam">File &gt; Examples &gt; Audio &gt; Analysis &gt; FFT
+	</p>
+	<p class="exam">File &gt; Examples &gt; Audio &gt; Analysis &gt; SpectrumAnalyzerBasic
+	</p>
+	<p class="exam">File &gt; Examples &gt; Audio &gt; Effects &gt; Chorus
+	</p>
+	<p class="exam">File &gt; Examples &gt; Audio &gt; Effects &gt; Flange
+	</p>
+	<p class="exam">File &gt; Examples &gt; Audio &gt; Effects &gt; Filter
+	</p>
+	<p class="exam">File &gt; Examples &gt; Audio &gt; Effects &gt; Filter_FIR
+	</p>
+	<h3>Notes</h3>
+	<p>Normally, this object is used with the Audio Shield, which
+		is controlled separately by the "sgtl5000" object.</p>
+	<p>Only one I2S input and one I2S output object may be used.  Master
+		and slave modes may not be mixed (both must be of the same type).
+	</p>
+	<p>I2S master objects can be used together with non-I2S input and output
+		objects, for simultaneous audio streaming on different hardware.</p>
+</div></div></div>
+	</div>
+
+	<div id="sidebar-separator" class="ui-draggable"></div>
+
+</div>
+
+<div id="notifications"></div>
+<div id="dropTarget"><div>Drop the flow here</div></div>
+
+
+
+
+
+
+<div id="node-dialog-error-deploy" class="hide">
+	<form class="form-horizontal">
+		<div id="node-dialog-error-deploy-noio" style="text-align: center; padding-top: 10px;">
+			<p>The workspace contains no input/output nodes!</p>
+			<p>You need an input or an output to export the data!</p>
+			<p>Without such a input/output function the exported
+			code will not run properly!</p>
+		</div>
+	</form>
+</div>
+
+<div id="node-help" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="node-help-label" aria-hidden="true">
+  <div class="modal-header">
+	<h5 id="node-help-label">Keyboard Shortcuts <span style="float: right;"><a href="http://node-red.github.io/docs" target="_blank">Open help in new window »</a></span></h5>
+  </div>
+  <div class="modal-body">
+	<table>
+		<tbody><tr>
+		  <td><span class="help-key">?</span></td><td>Help</td>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">a</span></td><td>Select all nodes</td>
+		</tr>
+		<tr>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">Space</span></td><td>Toggle sidebar</td>
+		  <td><span class="help-key">Shift</span> <span class="help-key">Click</span></td><td>Select all connected nodes</td>
+		</tr>
+		<tr>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">z</span></td><td>Undo</td>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">Click</span></td><td>Add/remove node from selection</td>
+		</tr>
+		<tr>
+		  <td></td><td></td>
+		  <td><span class="help-key">Delete</span></td><td>Delete selected nodes or link</td>
+		</tr>
+		<tr>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">x</span></td><td>Cut selected nodes</td>
+		  <td></td><td></td>
+		</tr>
+		<tr>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">c</span></td><td>Copy selected nodes</td>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">v</span></td><td>Paste nodes</td>
+		</tr>
+		<tr>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">i</span></td><td>Import nodes</td>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">e</span></td><td>Export selected nodes</td>
+		</tr>
+		<tr>
+		  <td colspan="2"></td>
+		</tr>
+		<tr>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">+</span></td><td>Zoom in</td>
+		  <td><span class="help-key">Ctrl</span> <span class="help-key">-</span></td><td>Zoom out</td>
+		</tr>
+	</tbody></table>
+  </div>
+  <div class="modal-footer">
+	<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
+<div id="node-dialog-library-save-confirm" class="hide">
+	<form class="form-horizontal">
+		<div style="text-align: center; padding-top: 30px;">
+		 A <span id="node-dialog-library-save-type"></span> called <span id="node-dialog-library-save-name"></span> already exists. Overwrite?
+		</div>
+	</form>
+</div>
+
+<div id="node-dialog-library-save" class="hide">
+	<form class="form-horizontal">
+		<div class="form-row">
+			<label for="node-dialog-library-save-folder"><i class="icon-folder-open"></i> Folder</label>
+			<input type="text" id="node-dialog-library-save-folder" placeholder="Folder">
+		</div>
+		<div class="form-row">
+			<label for="node-dialog-library-save-filename"><i class="icon-file"></i> Filename</label>
+			<input type="text" id="node-dialog-library-save-filename" placeholder="Filename">
+		</div>
+	</form>
+</div>
+
+<div id="node-dialog-library-lookup" class="hide">
+	<form class="form-horizontal">
+		<div class="form-row">
+			<ul id="node-dialog-library-breadcrumbs" class="breadcrumb">
+				<li class="active"><a href="#">Library</a></li>
+			</ul>
+		</div>
+		<div class="form-row">
+			<div style="vertical-align: top; display: inline-block; height: 100%; width: 30%; padding-right: 20px;">
+				<div id="node-select-library" style="border: 1px solid #999; width: 100%; height: 100%; overflow:scroll;"><ul></ul></div>
+			</div>
+			<div style="vertical-align: top; display: inline-block;width: 65%; height: 100%;">
+				<div style="height: 100%; width: 95%;" class="node-text-editor" id="node-select-library-text"></div>
+			</div>
+		</div>
+	</form>
+</div>
+
+
+
+<script type="text/x-red" data-template-name="export-clipboard-dialog">
+	<div class="form-row">
+		<label for="node-input-export" style="display: block; width:100%;"><i class="icon-share"></i> Source Code:</label>
+		<textarea readonly style="font-family: monospace; font-size: 12px; background:rgb(226, 229, 255); padding-left: 0.5em;" class="input-block-level" id="node-input-export" rows="12"></textarea>
+	</div>
+	<div class="form-tips">
+		Select the text above and copy to the clipboard with Ctrl-A Ctrl-C.
+	</div>
+</script>
+<script type="text/x-red" data-template-name="export-library-dialog">
+	<div class="form-row">
+		<label for="node-input-filename" ><i class="icon-tag"></i> Filename:</label>
+		<input type="text" id="node-input-filename" placeholder="Filename">
+	</div>
+</script>
+<script type="text/x-red" data-template-name="import-dialog">
+	<div class="form-row">
+		<label for="node-input-import"><i class="icon-share"></i>Nodes:</label>
+		<textarea style="font-family: monospace; font-size: 12px; background:rgb(226, 229, 255); padding-left: 0.5em;" class="input-block-level" id="node-input-import" rows="5" placeholder="Paste nodes here, or lookup in the library. When importing Arduino code, the whole flow will be replaced."></textarea>
+	</div>
+	<div class="form-tips">
+		<label for="node-input-arduino" style="font-size: 13px; padding: 2px 0px 0px 4px;">
+			<input style="margin-bottom: 4px; margin-right: 4px;" type="checkbox" id="node-input-arduino" checked="checked" class="input-block-level" />
+				&nbsp;Import copied code from the Arduino IDE
+		</label>
+	</div>
+</script>
+
+<script src="jquery/js/jquery-1.9.1.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="jquery/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="jquery/js/jquery.ui.touch-punch.min.js"></script>
+<script src="orion/built-editor.min.js"></script>
+<script src="red/d3/d3.v3.min.js"></script>
+<script src="red/main.js"></script><div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable" tabindex="-1" role="dialog" aria-describedby="node-dialog-confirm-deploy" aria-labelledby="ui-id-1" style="display: none; position: absolute;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span id="ui-id-1" class="ui-dialog-title">Confirm deploy</span><button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="close"><span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">close</span></button></div><div id="node-dialog-confirm-deploy" class="hide ui-dialog-content ui-widget-content" style="display: block;">
+	<form class="form-horizontal">
+		<div id="node-dialog-confirm-deploy-config" style="text-align: center; padding-top: 30px;">
+			Some of the nodes are not properly configured. Are you sure you want to deploy?
+		</div>
+		<div id="node-dialog-confirm-deploy-unknown" style="text-align: center; padding-top: 10px;">
+			The workspace contains some unknown node types:
+			<ul style="width: 300px; margin: auto; text-align: left;" id="node-dialog-confirm-deploy-unknown-list"></ul>
+			Are you sure you want to deploy?
+		</div>
+	</form>
+</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Confirm deploy</span></button><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Cancel</span></button></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div>
+<script src="red/ui/state.js"></script>
+<script src="red/nodes.js"></script>
+<script src="red/storage.js"></script>
+<script src="red/history.js"></script>
+<script src="red/ui/keyboard.js"></script>
+<script src="red/ui/tabs.js"></script>
+<script src="red/ui/view.js"></script><div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable" tabindex="-1" role="dialog" aria-describedby="node-dialog-rename-workspace" aria-labelledby="ui-id-2" style="display: none; position: absolute;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span id="ui-id-2" class="ui-dialog-title">Rename sheet</span><button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="close"><span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">close</span></button></div><div id="node-dialog-rename-workspace" class="hide ui-dialog-content ui-widget-content" style="display: block;">
+	<form class="form-horizontal">
+		<div class="form-row">
+			<label for="node-input-workspace-name"><i class="icon-tag"></i> Name:</label>
+			<input type="text" id="node-input-workspace-name">
+		</div>
+	</form>
+</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button" class="leftButton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Delete</span></button><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Ok</span></button><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Cancel</span></button></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable" tabindex="-1" role="dialog" aria-describedby="node-dialog-delete-workspace" aria-labelledby="ui-id-3" style="display: none; position: absolute;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span id="ui-id-3" class="ui-dialog-title">Confirm delete</span><button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="close"><span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">close</span></button></div><div id="node-dialog-delete-workspace" class="hide ui-dialog-content ui-widget-content" style="display: block;">
+	<form class="form-horizontal">
+		<div style="text-align: center; padding-top: 30px;">
+		 Are you sure you want to delete '<span id="node-dialog-delete-workspace-name"></span>'?
+		</div>
+	</form>
+</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Ok</span></button><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Cancel</span></button></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div>
+<script src="red/ui/sidebar.js"></script>
+<script src="red/ui/palette.js"></script>
+<script src="red/ui/tab-info.js"></script>
+<script src="red/ui/tab-config.js"></script>
+<script src="red/ui/editor.js"></script><div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable" tabindex="-1" role="dialog" aria-describedby="dialog" aria-labelledby="ui-id-4" style="display: none; position: absolute;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span id="ui-id-4" class="ui-dialog-title">&nbsp;</span><button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="close"><span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">close</span></button></div><div id="dialog" class="hide ui-dialog-content ui-widget-content" style="display: block;"><form id="dialog-form" class="form-horizontal"></form></div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Ok</span></button><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Cancel</span></button></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable" tabindex="-1" role="dialog" aria-describedby="node-config-dialog" aria-labelledby="ui-id-5" style="display: none; position: absolute;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span id="ui-id-5" class="ui-dialog-title">&nbsp;</span><button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="close"><span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">close</span></button></div><div id="node-config-dialog" class="hide ui-dialog-content ui-widget-content" style="display: block;"><form id="dialog-config-form" class="form-horizontal"></form><div class="form-tips" id="node-config-dialog-user-count"></div></div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Ok</span></button><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Cancel</span></button></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div>
+<script src="red/ui/library.js"></script>
+<script src="red/ui/notifications.js"></script>
+<script src="red/ui/touch/radialMenu.js"></script>
+
+<script type="text/x-red" data-container-name="NodeDefinitions">
+	{"nodes":[
+		{"type":"csvInput",
+			"data":{
+				"defaults":{
+					"name":{"value":"new"}
+				},
+				"shortName":"csvRead",
+				"inputs":0,
+				"outputs":4,
+				"category":"input-function",
+				"color":"#E6E0F8",
+				"icon":"csv.png"
+			}
+		},
+		{"type":"rdsinput",
+			"data":{
+				"defaults":{
+					"name":{"value":"new"}
+				},
+				"shortName":"RDS",
+				"inputs":0,
+				"outputs":4,
+				"category":"input-function",
+				"color":"#E6E0F8",
+				"icon":"arrow-in.png"
+			}
+		},
+		{"type":"s3input",
+			"data":{
+				"defaults":{
+					"name":{"value":"new"}
+				},
+				"shortName":"S3",
+				"inputs":0,
+				"outputs":4,
+				"category":"input-function",
+				"color":"#E6E0F8",
+				"icon":"arrow-in.png"
+			}
+		},
+		{"type":"dynamodbinput",
+			"data":{
+				"defaults":{
+					"name":{"value":"new"}
+				},
+				"shortName":"DynamoDB",
+				"inputs":0,
+				"outputs":4,
+				"category":"input-function",
+				"color":"#E6E0F8",
+				"icon":"arrow-in.png"
+			}
+		},
+		{"type":"sampleinputput","data":{"defaults":{"name":{"value":"new"}},"shortName":"sample","inputs":1,"outputs":1,"category":"manipulation-function","color":"#E6E0F8","icon":"arrow-in.png"}},
+		{"type":"splitinputput","data":{"defaults":{"name":{"value":"new"}},"shortName":"split","inputs":1,"outputs":2,"category":"manipulation-function","color":"#E6E0F8","icon":"arrow-in.png"}},
+		{"type":"AudioOutputAnalog","data":{"defaults":{"name":{"value":"new"}},"shortName":"CSVWrite","inputs":2,"outputs":0,"category":"output-function","color":"#E6E0F8","icon":"csv.png"}}
+	]}
+</script>
+
+
+</body></html>
